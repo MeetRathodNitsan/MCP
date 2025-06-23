@@ -1,11 +1,12 @@
-
 import json
 import re
 import requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from duckduckgo_search import DDGS
-
+import os
 from mcp_server import generate_code_file
+
+DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads")
 
 class SimpleHandler(BaseHTTPRequestHandler):
     def _set_headers(self, status=200):
@@ -46,13 +47,21 @@ class SimpleHandler(BaseHTTPRequestHandler):
                 for i, url in enumerate(pdf_urls, 1):
                     try:
                         response = requests.get(url, stream=True, timeout=20)
+                        if "application/pdf" not in response.headers.get("Content-Type", "").lower():
+                            continue
                         response.raise_for_status()
                         filename = re.sub(r'\W+', '_', query)[:50] + f"_{i}.pdf"
-                        with open(filename, "wb") as f:
+                        filepath = os.path.join(DOWNLOAD_DIR, filename)
+                        with open(filepath, "wb") as f:
                             for chunk in response.iter_content(1024):
                                 f.write(chunk)
                         self._set_headers()
-                        self.wfile.write(json.dumps({"status": "success", "file": filename, "url": url}).encode())
+                        self.wfile.write(json.dumps({
+                            "status": "success",
+                            "file": filename,
+                            "path": filepath,
+                            "url": url
+                        }).encode())
                         return
                     except Exception:
                         continue
@@ -62,16 +71,21 @@ class SimpleHandler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._set_headers(500)
                 self.wfile.write(json.dumps({"error": str(e)}).encode())
-        
+
         elif self.path == "/detect_tool":
             prompt = data.get("prompt", "")
             try:
                 detect_prompt = (
-                    f"Given the user request: '{prompt}', respond ONLY with one tool name: 'generate', 'download_pdf', or 'summarize_pdf'."
-                    f" Do not explain, just return the tool name."
+                    f"You are a smart assistant.\n"
+                    f"User said: \"{prompt}\"\n"
+                    f"Choose a tool to fulfill this request:\n"
+                    f"- If they want help or information, use: generate\n"
+                    f"- If they want to download a file, document or PDF, use: download_pdf\n"
+                    f"- If they want to write or generate some code, use: generate_code_file\n"
+                    f"Reply with only one of these: generate, download_pdf, generate_code_file"
                 )
                 response = requests.post("http://localhost:11434/api/generate", json={
-                    "model": "llama ",
+                    "model": "llama3.2:1b",
                     "prompt": detect_prompt,
                     "stream": False
                 })
@@ -82,7 +96,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._set_headers(500)
                 self.wfile.write(json.dumps({"error": str(e)}).encode())
-                
+
         elif self.path == "/generate_code_file":
             language = data.get("language", "")
             task = data.get("task", "")
@@ -93,7 +107,6 @@ class SimpleHandler(BaseHTTPRequestHandler):
         else:
             self._set_headers(404)
             self.wfile.write(json.dumps({"error": "Route not found"}).encode())
-
 
 def run():
     print("🔌 MCP Dynamic Tool Router running at http://localhost:5001")

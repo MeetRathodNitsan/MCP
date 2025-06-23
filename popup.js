@@ -2,91 +2,116 @@ document.addEventListener("DOMContentLoaded", () => {
   const askBtn = document.getElementById("askBtn");
   const promptInput = document.getElementById("prompt");
   const chatBox = document.getElementById("chat-container");
-
-  const toolSelect = document.getElementById("tool");
-  const langInput = document.getElementById("lang");
-  const taskInput = document.getElementById("task");
-
-  // Load previous history from localStorage
+  
+promptInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    askBtn.click();
+  }
+});
   const history = JSON.parse(localStorage.getItem("mcp_history") || "[]");
-  history.forEach(({ role, content }) => {
-    appendBubble(role, content);
-  });
+  history.forEach(({ role, content }) => appendBubble(role, content));
 
-  // Tool selector logic
-  toolSelect.addEventListener("change", () => {
-    const isCodeTool = toolSelect.value === "generate_code_file";
-    langInput.style.display = isCodeTool ? "block" : "none";
-    taskInput.style.display = isCodeTool ? "block" : "none";
-    promptInput.style.display = isCodeTool ? "none" : "block";
-  });
-
-  // Handle Ask Button
   askBtn.addEventListener("click", async () => {
-    const selectedTool = toolSelect.value;
+    const prompt = promptInput.value.trim();
+    if (!prompt) return;
 
-    if (selectedTool === "ask_llm") {
-      const prompt = promptInput.value.trim();
-      if (!prompt) return;
+    appendBubble("user", prompt);
+    saveToHistory("user", prompt);
+    promptInput.value = "";
 
-      appendBubble("user", prompt);
-      saveToHistory("user", prompt);
-      promptInput.value = "";
+    let tool = detectTool(prompt);
 
+    if (tool === "unknown") {
       try {
-        const res = await fetch("http://localhost:5001/generate", {
+        const detectRes = await fetch("http://localhost:5001/detect_tool", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
         });
-
-        const data = await res.json();
-        const reply = data.response || "⚠️ No response.";
-        appendBubble("ai", reply);
-        saveToHistory("ai", reply);
+        const result = await detectRes.json();
+        tool = result.tool;
       } catch (err) {
-        const errorMsg = `❌ ${err.message}`;
-        appendBubble("ai", errorMsg);
-        saveToHistory("ai", errorMsg);
+        appendBubble("ai", `❌ Tool detection failed: ${err.message}`);
+        return;
       }
     }
 
-    else if (selectedTool === "generate_code_file") {
-      const language = langInput.value.trim();
-      const task = taskInput.value.trim();
-      if (!language || !task) return;
-
-      const requestText = `Generate ${language} code to: ${task}`;
-      appendBubble("user", requestText);
-      saveToHistory("user", requestText);
-
-      try {
+    try {
+      if (tool === "download_pdf") {
+        const res = await fetch("http://localhost:5001/download_pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: prompt })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          appendBubble("ai", `📄 PDF downloaded: ${data.file}`);
+          saveToHistory("ai", `📄 PDF downloaded: ${data.file}`);
+        } else {
+          appendBubble("ai", "❌ Failed to download PDF.");
+        }
+      } else if (tool === "generate_code_file") {
+        const language = guessLanguage(prompt);
+        const task = prompt;
         const res = await fetch("http://localhost:5001/generate_code_file", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ language, task })
         });
+        const data = await res.json();
+        const code = data.response || "⚠️ No code generated.";
+        appendBubble("ai", code);
+        saveToHistory("ai", code);
 
+        const blob = new Blob([code], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `generated_code.${language.toLowerCase()}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        const res = await fetch("http://localhost:5001/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
         const data = await res.json();
         const reply = data.response || "⚠️ No response.";
         appendBubble("ai", reply);
         saveToHistory("ai", reply);
-      } catch (err) {
-        const errorMsg = `❌ ${err.message}`;
-        appendBubble("ai", errorMsg);
-        saveToHistory("ai", errorMsg);
       }
+    } catch (err) {
+      const errorMsg = `❌ ${err.message}`;
+      appendBubble("ai", errorMsg);
+      saveToHistory("ai", errorMsg);
     }
   });
 
-  // Append chat bubble
+  function detectTool(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes("pdf") || lower.includes("download")) return "download_pdf";
+    if (lower.includes("code") || ["python", "html", "javascript", "java", "c++", "react"].some(w => lower.includes(w))) return "generate_code_file";
+    return "unknown";
+  }
+
+  function guessLanguage(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes("python")) return "python";
+    if (lower.includes("html")) return "html";
+    if (lower.includes("javascript")) return "javascript";
+    if (lower.includes("java")) return "java";
+    if (lower.includes("c++")) return "cpp";
+    if (lower.includes("react")) return "jsx";
+    return "txt";
+  }
+
   function appendBubble(role, text) {
     const bubble = document.createElement("div");
     bubble.classList.add("bubble", role === "user" ? "user-msg" : "ai-msg");
-
-    // Animate bubble
-    bubble.style.opacity = "0";
-    bubble.style.transform = "translateY(10px)";
     bubble.innerText = text;
     chatBox.appendChild(bubble);
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -98,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 10);
   }
 
-  // Store to localStorage
   function saveToHistory(role, content) {
     history.push({ role, content });
     localStorage.setItem("mcp_history", JSON.stringify(history));
