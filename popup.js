@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const askBtn = document.getElementById("askBtn");
   const promptInput = document.getElementById("prompt");
   const chatBox = document.getElementById("chat-container");
-  
+
 promptInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
