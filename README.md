@@ -4,9 +4,6 @@ A smart browser extension that acts like your **local AI assistant** — able to
 - ✨ Chat with an LLM
 - 📄 Download relevant PDF files from the web
 - 💻 Generate executable code snippets in various languages
-- ⚙️ Auto-start and auto-stop the backend server when needed
-
----
 
 ## 🔍 Features
 
@@ -38,9 +35,7 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
    - Calls local LLM (via Ollama) for chat
    - Searches DuckDuckGo and downloads PDFs
    - Uses AI to generate code and triggers download
-4. ⏲️ `mcp_auto.py` monitors activity and auto-starts/stops backend based on usage
 
----
 
 ## 🧪 Tech Stack
 
@@ -61,3 +56,11 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 ```bash
 git clone https://github.com/your-username/mcp-assistant.git
 cd mcp-assistant
+
+📦 mcp-assistant/
+├── popup.html          # Extension UI
+├── popup.js            # Chat logic + intent detection
+├── mcp_bridge.py       # Main backend with LLM + PDF/code routing
+├── mcp_auto.py         # Auto-start/stop launcher for backend
+├── mcp_server.py       # Your code generation logic (custom)
+├── README.md           # You're reading this
