@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "MCP Assistant",
+  "name": "Quorb - Your Personal AI Assistant",
   "version": "1.0",
   "description": "A local LLM assistant powered by MCP running in your terminal and controlled via browser.",
   "permissions": [
@@ -12,7 +12,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Ask MCP"
+    "default_title": "Ask Quorb"
   },
   "background": {
     "service_worker": "background.js"

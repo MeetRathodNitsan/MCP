@@ -140,7 +140,7 @@ def detect_intent(prompt):
         return f"❌ LLM error: {e}"
 
 
-# === MCP CLI Agent ===
+
 def run_mcp():
     print("\nMCP Agent with Web + LLM Toolchain")
     print("Type a request or use tool names. Type 'exit' to quit.")
