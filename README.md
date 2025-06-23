@@ -51,7 +51,6 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/MeetRathodNitsan/Quorb---Your-Personal-AI-Assistant
-.git
+git clone https://github.com/MeetRathodNitsan/Quorb---Your-Personal-AI-Assistant.git
 cd Quorb---Your-Personal-AI-Assistant
 ```
