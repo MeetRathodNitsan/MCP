@@ -54,11 +54,3 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 git clone https://github.com/your-username/mcp-assistant.git
 cd mcp-assistant
 ```
-
-📦 mcp-assistant/
-├── popup.html          # Extension UI
-├── popup.js            # Chat logic + intent detection
-├── mcp_bridge.py       # Main backend with LLM + PDF/code routing
-├── mcp_auto.py         # Auto-start/stop launcher for backend
-├── mcp_server.py       # Your code generation logic (custom)
-├── README.md           
