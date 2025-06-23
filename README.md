@@ -53,6 +53,7 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 ```bash
 git clone https://github.com/your-username/mcp-assistant.git
 cd mcp-assistant
+```
 
 📦 mcp-assistant/
 ├── popup.html          # Extension UI
