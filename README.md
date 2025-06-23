@@ -1,4 +1,4 @@
-# 🧠 MCP — Multi-Context Prompting Browser Assistant 🚀
+# 🧠 Quorb — Your Personal AI Assistant 🚀
 
 A smart browser extension that acts like your **local AI assistant** — able to:
 - ✨ Chat with an LLM
@@ -14,13 +14,10 @@ Just type like a normal human — no need for special syntax or commands.
 > “What is AI?” → ✅ Instant response
 
 ✅ **Automatic Intent Detection**  
-MCP intelligently detects whether you're:
+Quorb intelligently detects whether you're:
 - Asking a question
 - Wanting to download a file
 - Requesting code
-
-✅ **Auto-Start Server**  
-No need to start your backend manually. MCP includes a Python auto-launcher that starts the LLM server only when needed — and shuts it down when idle.
 
 ✅ **Clean Chat UI**  
 Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appear as friendly chat bubbles.
@@ -63,4 +60,4 @@ cd mcp-assistant
 ├── mcp_bridge.py       # Main backend with LLM + PDF/code routing
 ├── mcp_auto.py         # Auto-start/stop launcher for backend
 ├── mcp_server.py       # Your code generation logic (custom)
-├── README.md           # You're reading this
+├── README.md           
