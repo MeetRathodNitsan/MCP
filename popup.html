@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MCP Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f5f5f5;
+      width: 320px;
+      height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+
+    #controls {
+      margin-bottom: 10px;
+    }
+
+    select, input[type="text"], button {
+      width: 100%;
+      margin-bottom: 6px;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    input[type="text"] {
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007aff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005bb5;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #chat-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bubble {
+      padding: 8px 12px;
+      border-radius: 18px;
+      max-width: 80%;
+      animation: fadeIn 0.4s ease-in;
+      word-wrap: break-word;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background-color: #007aff;
+      color: white;
+    }
+
+    .ai-msg {
+      align-self: flex-start;
+      background-color: #e5e5ea;
+      color: black;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h3>MCP Assistant</h3>
+
+  <div id="controls">
+    <select id="tool">
+      <option value="ask_llm">Ask MCP</option>
+      <option value="generate_code_file">Generate Code File</option>
+    </select>
+
+    <input id="prompt" type="text" placeholder="Type a message..." />
+    <input id="lang" type="text" placeholder="e.g. Python, HTML" style="display:none;" />
+    <input id="task" type="text" placeholder="Describe what code should do..." style="display:none;" />
+    <button id="askBtn">Send</button>
+  </div>
+
+  <div id="chat-container"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
