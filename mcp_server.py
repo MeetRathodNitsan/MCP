@@ -180,7 +180,7 @@ def run_mcp():
         else:
             result = "\u274c Tool not implemented."
 
-        print("\n\ud83d\udce4 Result:\n", result)
+        print("\nResult:\n", result)
 
 if __name__ == "__main__":
     run_mcp()

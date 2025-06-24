@@ -6,17 +6,41 @@ from duckduckgo_search import DDGS
 import os
 from mcp_server import generate_code_file
 
-DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads")
+DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "downloads")
 
 class SimpleHandler(BaseHTTPRequestHandler):
     def _set_headers(self, status=200):
         self.send_response(status)
         self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")  # ✅ Add this
         self.end_headers()
 
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()    
+
+    def do_GET(self):
+        if self.path == "/ping":
+            self._set_headers()
+            self.wfile.write(json.dumps({"status": "alive"}).encode())
+        else:
+            self._set_headers(404)
+            self.wfile.write(json.dumps({"error": "Not Found"}).encode())
+            
     def do_POST(self):
         length = int(self.headers.get('Content-Length', 0))
-        data = json.loads(self.rfile.read(length).decode('utf-8'))
+        raw = self.rfile.read(length).decode('utf-8')
+
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            self._set_headers(400)
+            self.wfile.write(json.dumps({"error": f"Invalid JSON: {str(e)}"}).encode())
+            return
 
         if self.path == "/generate":
             prompt = data.get("prompt", "")
