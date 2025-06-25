@@ -1,3 +1,4 @@
+// Developed By Meet Rathod
 document.addEventListener("DOMContentLoaded", () => {
   const askBtn = document.getElementById("askBtn");
   const promptInput = document.getElementById("prompt");
@@ -138,3 +139,4 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("mcp_history", JSON.stringify(history));
   }
 });
+// Developed By Meet Rathod

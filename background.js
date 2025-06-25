@@ -1,3 +1,5 @@
+// Developed By Meet Rathod
+
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.action === "generate") {
     try {
@@ -23,3 +25,5 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     return true;
   }
 });
+
+// Developed By Meet Rathod

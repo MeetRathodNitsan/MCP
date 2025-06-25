@@ -1,3 +1,5 @@
+# Developed By Meet Rathod
+
 import asyncio
 import platform
 
@@ -121,3 +123,5 @@ async def detect_tool(request: Request):
             return JSONResponse(content=r.json(), status_code=r.status_code)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+# Developed By Meet Rathod
