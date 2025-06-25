@@ -40,7 +40,7 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 |----------------|-----------------------------------|
 | Extension UI    | HTML + CSS + JS                   |
 | Backend Server  | Python + HTTPServer               |
-| Tool Detection  | Keyword Matching + LLM (Ollama)   |
+| Tool Detection  | Keyword Matching + granite LLM   |
 | Code Gen        | Custom `/generate_code_file` route|
 | PDF Search      | DuckDuckGo Search API             |
 | Auto Launcher   | Python subprocess manager         |
