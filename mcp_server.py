@@ -64,7 +64,7 @@ def ask_llm_chat():
 
 def call_llm(prompt):
     url = "http://localhost:11434/api/generate"
-    payload = {"model": "llama3.2:1b", "prompt": prompt, "stream": False}
+    payload = {"model": "granite3.3:latest", "prompt": prompt, "stream": False}
     res = requests.post(url, json=payload)
     return res.json().get("response", "No response from model.")
 

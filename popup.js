@@ -3,12 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const promptInput = document.getElementById("prompt");
   const chatBox = document.getElementById("chat-container");
 
-promptInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    askBtn.click();
-  }
-});
+  // Create a hidden anchor element for safe, single-download use
+  const downloadLink = document.createElement("a");
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+
+  promptInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      askBtn.click();
+    }
+  });
+
   const history = JSON.parse(localStorage.getItem("mcp_history") || "[]");
   history.forEach(({ role, content }) => appendBubble(role, content));
 
@@ -24,7 +30,7 @@ promptInput.addEventListener("keydown", (event) => {
 
     if (tool === "unknown") {
       try {
-        const detectRes = await fetch("http://localhost:5001/detect_tool", {
+        const detectRes = await fetch("http://localhost:8010/detect_tool", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
@@ -39,7 +45,7 @@ promptInput.addEventListener("keydown", (event) => {
 
     try {
       if (tool === "download_pdf") {
-        const res = await fetch("http://localhost:5001/download_pdf", {
+        const res = await fetch("http://localhost:8010/download_pdf", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: prompt })
@@ -54,7 +60,7 @@ promptInput.addEventListener("keydown", (event) => {
       } else if (tool === "generate_code_file") {
         const language = guessLanguage(prompt);
         const task = prompt;
-        const res = await fetch("http://localhost:5001/generate_code_file", {
+        const res = await fetch("http://localhost:8010/generate_code_file", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ language, task })
@@ -64,17 +70,15 @@ promptInput.addEventListener("keydown", (event) => {
         appendBubble("ai", code);
         saveToHistory("ai", code);
 
+        // Safely trigger single download
         const blob = new Blob([code], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `generated_code.${language.toLowerCase()}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        downloadLink.href = url;
+        downloadLink.download = `generated_code.${language.toLowerCase()}`;
+        downloadLink.click();
         URL.revokeObjectURL(url);
       } else {
-        const res = await fetch("http://localhost:5001/generate", {
+        const res = await fetch("http://localhost:8010/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
@@ -94,7 +98,13 @@ promptInput.addEventListener("keydown", (event) => {
   function detectTool(text) {
     const lower = text.toLowerCase();
     if (lower.includes("pdf") || lower.includes("download")) return "download_pdf";
-    if (lower.includes("code") || ["python", "html", "javascript", "java", "c++", "react"].some(w => lower.includes(w))) return "generate_code_file";
+    if (
+      lower.includes("code") ||
+      ["python", "html", "javascript", "java", "c++", "react"].some((w) =>
+        lower.includes(w)
+      )
+    )
+      return "generate_code_file";
     return "unknown";
   }
 

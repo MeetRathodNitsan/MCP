@@ -1,0 +1,1 @@
+Type the command in the proxy_server.py: uvicorn proxy_server:app --port 8010

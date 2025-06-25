@@ -8,11 +8,13 @@ from mcp_server import generate_code_file
 
 DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "downloads")
 
+print("[INFO] mcp_bridge.py: Started running.")
+
 class SimpleHandler(BaseHTTPRequestHandler):
     def _set_headers(self, status=200):
         self.send_response(status)
         self.send_header("Content-type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")  # ✅ Add this
+        self.send_header("Access-Control-Allow-Origin", "*")  
         self.end_headers()
 
 
@@ -133,9 +135,11 @@ class SimpleHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"error": "Route not found"}).encode())
 
 def run():
-    print("🔌 MCP Dynamic Tool Router running at http://localhost:5001")
+    print("[INFO] MCP Bridge: Starting server...")
     server = HTTPServer(('localhost', 5001), SimpleHandler)
     server.serve_forever()
 
 if __name__ == "__main__":
+    print("[INFO] MCP Bridge __main__ triggered.")
     run()
+
