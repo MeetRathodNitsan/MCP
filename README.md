@@ -32,6 +32,8 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
    - Calls local LLM (via Ollama) for chat
    - Searches DuckDuckGo and downloads PDFs
    - Uses AI to generate code and triggers download
+4. ![image](https://github.com/user-attachments/assets/0d85080f-a0b9-44d4-bc12-55a47364a8fa)
+FastAPI based proxy server for automatically invoking mcp bridge.
 
 
 ## 🧪 Tech Stack
