@@ -55,4 +55,9 @@ Minimalist extension UI built with HTML, CSS, and JavaScript. All responses appe
 git clone https://github.com/MeetRathodNitsan/Quorb---Your-Personal-AI-Assistant.git
 cd Quorb---Your-Personal-AI-Assistant
 ```
+### 2. Write the given below code
+```bash
+uvicorn proxy_server:app --port 8010
+```
+
 ## © All Right Reserved by the owner of this git repository.
